@@ -74,7 +74,7 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); scroll-behavior: smooth; }
+  html { font-size: clamp(1rem, .625rem + .4167vw, 1.375rem); scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); scroll-behavior: smooth; }
   *, *::before, *::after { box-sizing: inherit; }
   body::before {
     content: "";
@@ -98,7 +98,7 @@
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 
-  .wrap { width: min(1180px, 100% - 2.5rem); margin-inline: auto; }
+  .wrap { --gutter: clamp(1.25rem, 4.5vw, 7rem); width: min(100% - 2 * var(--gutter), 150rem); margin-inline: auto; }
 
   /* ---------- header ---------- */
   .site-header {
@@ -110,7 +110,7 @@
   }
   .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: .85rem; }
   .brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; color: var(--purple-text); }
-  .brand svg { width: 36px; height: 36px; flex: none; }
+  .brand svg { width: 2.25rem; height: 2.25rem; flex: none; }
   .brand-name { font-family: "Newsreader", Georgia, serif; font-size: 1.55rem; line-height: 1; font-weight: 450; color: var(--ink); letter-spacing: -.01em; display: block; }
   .brand-name sup, .tm { font-size: .5em; font-weight: 400; vertical-align: super; line-height: 0; margin-left: .06em; }
   .brand-sub { display: block; font-size: .78rem; color: var(--muted); letter-spacing: .04em; margin-top: .2rem; line-height: 1.1; }
@@ -136,7 +136,7 @@
   .btn:hover { filter: brightness(1.12); }
 
   .dial-wrap { position: relative; }
-  .dial { display: block; width: min(100%, 520px); height: auto; margin-inline: auto; overflow: visible; }
+  .dial { display: block; width: min(100%, 36rem); height: auto; margin-inline: auto; overflow: visible; }
   .dial .rings circle { fill: none; stroke: var(--rule); stroke-width: 1; }
   .dial .face { fill: var(--face); stroke: var(--purple); stroke-width: 1.5; }
   .dial .inner { fill: none; stroke: var(--rule); stroke-width: 1; }
@@ -260,7 +260,20 @@
   .addr { color: var(--deep-muted); font-size: .98rem; margin-top: 1.5rem; }
   .site-footer { background: var(--deeper); color: var(--deep-muted); padding-block: 1.75rem; font-size: .93rem; }
   .site-footer .wrap { display: flex; align-items: center; gap: .75rem; }
-  .site-footer svg { width: 26px; height: 26px; color: var(--deep-ink); }
+  .site-footer svg { width: 1.625rem; height: 1.625rem; color: var(--deep-ink); }
+
+  /* ---------- wide screens (1600px+): use the extra width ---------- */
+  @media (min-width: 1600px) {
+    .split { grid-template-columns: minmax(0, .28fr) minmax(0, 1fr); }
+    .split > h2 + div:has(> .person) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(3rem, 4vw, 6rem); }
+    .person:nth-child(2) { border-top: 0; padding-top: 0; }
+    .essays { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(3rem, 4vw, 6rem); }
+    .essay:nth-last-child(2) { border-bottom: 1px solid var(--rule); }
+    .contact .split > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(3rem, 5vw, 7rem); grid-template-rows: auto 1fr; align-items: start; }
+    .contact .lead { grid-column: 1; }
+    .contact .contact-form { grid-column: 2; grid-row: 1 / span 2; margin-top: 0; max-width: none; }
+    .contact .addr { grid-column: 1; grid-row: 2; }
+  }
 </style>
 </head>
 <body>
