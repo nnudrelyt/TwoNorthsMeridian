@@ -317,17 +317,53 @@
   .work { background: var(--deep); color: var(--deep-ink); }
   .work .prose p { color: var(--deep-muted); }
   .steps { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; position: relative; }
-  .steps::before { content: ""; position: absolute; left: 0; right: 0; top: 9px; border-top: 1.5px dashed var(--deep-rule); }
+  /* process rule: a dotted segment runs between markers (stopping short of each), ending at a final marker */
+  .steps::after { content: ""; position: absolute; top: 0; right: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--deep); border: 2px solid var(--deep-rule); transition: background-color .5s ease, border-color .5s ease, box-shadow .5s ease; }
   .step { position: relative; padding-top: 2.8rem; }
-  .step::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--deep); border: 2px solid var(--deep-accent); }
+  .step::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; border-radius: 50%; background: var(--deep); border: 2px solid var(--deep-accent); transition: background-color .5s ease, border-color .5s ease, box-shadow .5s ease, opacity .5s ease; }
   .step:last-child::before { background: var(--deep-accent); }
+  .step::after {
+    content: ""; position: absolute; top: 4.5px; left: 30px; width: calc(100% + 2.5rem - 42px); height: 9px;
+    /* layers: brighter solid fill (animated, so the dotted rule closes up and brightens into a line) · open arrowhead · dotted rule */
+    background: linear-gradient(#8F7BC4, #8F7BC4) 0 50% / 0% 1.5px no-repeat,
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 9'%3E%3Cpath d='M1 1l5 3.5L1 8' fill='none' stroke='%237A66A8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 100% 50% / 7px 9px no-repeat,
+                repeating-linear-gradient(90deg, var(--deep-rule) 0 5px, transparent 5px 9px) 0 50% / calc(100% - 3px) 1.5px no-repeat;
+  }
+  .step:last-child::after { width: calc(100% - 60px); }   /* stops 12px short of the end marker */
+  /* cycling highlight (added by the script): one step lit, the others dimmed; its segment fills toward the next marker */
+  .steps.is-cycling .step h3, .steps.is-cycling .step p { opacity: .42; transition: opacity .7s ease; }
+  .steps.is-cycling .step.is-active h3, .steps.is-cycling .step.is-active p { opacity: 1; }
+  .steps.is-cycling .step::before { background: var(--deep); opacity: .55; }
+  /* active marker: only a small centred dot, no ring */
+  .steps.is-cycling .step.is-active::before { background: radial-gradient(circle, var(--deep-accent) 0 3.5px, transparent 4px); border-color: transparent; opacity: 1; }
+  .steps.is-cycling .step.is-active::after { animation: seg-fill var(--step-dur, 4200ms) cubic-bezier(.45, .05, .55, .95) forwards; }
+  .steps.is-cycling.is-paused .step.is-active::after { animation: none; background-size: calc(100% - 3px) 1.5px, 7px 9px, calc(100% - 3px) 1.5px; }
+  .steps.is-cycling.end-lit::after { background: radial-gradient(circle, var(--deep-accent) 0 3.5px, transparent 4px); border-color: transparent; }
+  .steps.is-cycling.end-lit .step:last-child::after { background-size: calc(100% - 3px) 1.5px, 7px 9px, calc(100% - 3px) 1.5px; }
+  /* on-scroll text reveal (added by the script, so content is visible without it): a soft rise and fade, lightly staggered */
+  .sr-ready .sr { opacity: 0; transform: translateY(18px); transition: opacity 1.33s cubic-bezier(.45, 0, .25, 1), transform 1.47s cubic-bezier(.3, .45, .25, 1); transition-delay: var(--sr-d, 0ms); }
+  .sr-ready .sr.is-in { opacity: 1; transform: none; }
+  .sr-ready .essays > .sr { transition-duration: 1.1s, 1.2s; }   /* Perspectives come in a little quicker */
+  @keyframes seg-fill { from { background-size: 0% 1.5px, 7px 9px, calc(100% - 3px) 1.5px; } to { background-size: calc(100% - 3px) 1.5px, 7px 9px, calc(100% - 3px) 1.5px; } }
+  @keyframes seg-fill-v { from { background-size: 1.5px 0%, 9px 7px, 1.5px calc(100% - 3px); } to { background-size: 1.5px calc(100% - 3px), 9px 7px, 1.5px calc(100% - 3px); } }
   .step h3 { font-size: 2rem; font-weight: 400; line-height: 1.1; }
   .step p { margin-top: .75rem; color: var(--deep-muted); font-size: 1.03rem; line-height: 1.6; max-width: 36ch; }
   @media (max-width: 900px) {
     .steps { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
-    .steps::before { top: 9px; bottom: 9px; left: 9px; right: auto; border-top: 0; border-left: 1.5px dashed var(--deep-rule); }
     .step { padding-top: 0; padding-left: 2.9rem; }
     .step::before { top: 8px; }
+    /* vertical process rule: segments run down between markers; the end marker sits below the last step */
+    .steps { padding-bottom: 2.75rem; }
+    .steps::after { top: auto; bottom: 0; right: auto; left: 0; }
+    .step::after {
+      top: 38px; left: 4.5px; width: 9px; height: calc(100% + 2.25rem - 42px);
+      background: linear-gradient(#8F7BC4, #8F7BC4) 50% 0 / 1.5px 0% no-repeat,
+                  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 7'%3E%3Cpath d='M1 1l3.5 5L8 1' fill='none' stroke='%237A66A8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 50% 100% / 9px 7px no-repeat,
+                  repeating-linear-gradient(180deg, var(--deep-rule) 0 5px, transparent 5px 9px) 50% 0 / 1.5px calc(100% - 3px) no-repeat;
+    }
+    .step:last-child::after { width: 9px; height: calc(100% - 24px); }   /* stops 12px above the end marker */
+    .steps.is-cycling.is-paused .step.is-active::after, .steps.is-cycling.end-lit .step:last-child::after { background-size: 1.5px calc(100% - 3px), 9px 7px, 1.5px calc(100% - 3px); }
+    .steps.is-cycling .step.is-active::after { animation-name: seg-fill-v; }
   }
 
   /* people: ring colors are the institutions each person is tied to */
@@ -350,12 +386,12 @@
 
   /* perspectives */
   .essays { list-style: none; margin: 0; padding: 0; }
-  .essay { padding-block: 1.4rem; border-top: 1px solid var(--rule); }
+  .essay { padding-block: 2.1rem; border-top: 1px solid var(--rule); }
   .essay:last-child { border-bottom: 1px solid var(--rule); }
   .essay h3 { font-size: clamp(1.35rem, 2.2vw, 1.7rem); font-weight: 400; line-height: 1.25; }
   .essay h3 a { text-decoration: none; }
   .essay h3 a:hover { color: var(--purple-text); text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 4px; }
-  .essay .src { color: var(--muted); font-size: .93rem; margin-top: .3rem; }
+  .essay .src { color: var(--muted); font-size: .93rem; margin-top: .65rem; }
   .essay .src a { color: var(--purple-text); }
 
   /* contact + footer */
@@ -370,6 +406,8 @@
   .contact .btn { background: var(--deep-accent); color: #1A0838; justify-self: start; margin-top: .5rem; }
   .status { min-height: 1.5rem; font-size: .95rem; color: var(--deep-muted); }
   .addr { color: var(--deep-muted); font-size: .98rem; margin-top: 1.5rem; }
+  .addr a { color: var(--deep-ink); text-decoration-color: var(--deep-accent); text-underline-offset: 3px; }
+  .addr a:hover { color: var(--deep-accent); }
   .site-footer { background: var(--deeper); color: var(--deep-muted); padding-block: 1.75rem; font-size: .93rem; }
   .site-footer .wrap { display: flex; align-items: center; gap: .75rem; }
   .site-footer svg { width: 1.72rem; height: 1.72rem; color: #C7B2F6; }
@@ -709,7 +747,7 @@
           <button class="btn btn-go" type="button" id="send">Send inquiry<svg class="btn-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <p class="status" id="status" role="status" aria-live="polite"></p>
         </div>
-        <p class="addr">Or write to us directly: email address to come.</p>
+        <p class="addr">Or write to us directly: <a href="mailto:hello@twonorthsmeridian.com">hello@twonorthsmeridian.com</a>.</p>
       </div>
     </div>
   </div>
@@ -791,6 +829,79 @@
     window.addEventListener('scroll', function () {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }, { passive: true });
+  })();
+
+  // On-scroll reveal for the text below the hero: each block rises 18px and fades in slowly, once; siblings staggered ~160ms
+  (function () {
+    if (!('IntersectionObserver' in window)) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var groups = [
+      '.section .split > h2',
+      '.section .prose > *',
+      '.framework-head', '.strengths > li',
+      '.work .steps',
+      '.person',
+      '.why .split > div > *',
+      '.essays > li',
+      '.contact .split > div > .lead', '.contact .contact-form', '.contact .addr'
+    ];
+    var els = [];
+    groups.forEach(function (sel) {
+      var list = document.querySelectorAll(sel);
+      Array.prototype.forEach.call(list, function (el) {
+        if (el.closest('.hero') || el.classList.contains('sr')) return;
+        var sibs = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.matches(sel); });
+        el.style.setProperty('--sr-d', Math.min(sibs.indexOf(el), 5) * (sel === '.essays > li' ? 70 : 130) + 'ms');
+        el.classList.add('sr'); els.push(el);
+      });
+    });
+    document.documentElement.classList.add('sr-ready');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+
+  // How we work: highlight one step at a time, left to right, then loop (continuous refinement).
+  // Each step's segment fills toward the next marker; after Learn the end marker lights, then it restarts.
+  // Hover or keyboard focus on a step holds the highlight there; runs only while the section is on screen.
+  (function () {
+    var ol = document.querySelector('.steps');
+    if (!ol) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var steps = Array.prototype.slice.call(ol.children), DUR = 4200, END = 1100;
+    var i = -1, t = null, visible = false, held = false;
+    ol.classList.add('is-cycling');
+    ol.style.setProperty('--step-dur', DUR + 'ms');
+    function show(n) {
+      ol.classList.remove('end-lit');
+      steps.forEach(function (s, k) { s.classList.remove('is-active'); });
+      void ol.offsetWidth;                       // restart the segment fill
+      steps[n].classList.add('is-active');
+      i = n;
+    }
+    function advance() {
+      clearTimeout(t);
+      if (held || !visible) return;
+      if (i < steps.length - 1) { show(i + 1); t = setTimeout(advance, DUR); }
+      else if (!ol.classList.contains('end-lit')) { ol.classList.add('end-lit'); t = setTimeout(advance, END); }
+      else { i = -1; advance(); }
+    }
+    steps.forEach(function (s, k) {
+      function hold() { held = true; clearTimeout(t); ol.classList.add('is-paused'); show(k); }
+      function release() { held = false; ol.classList.remove('is-paused'); show(k); clearTimeout(t); t = setTimeout(advance, DUR); }
+      s.addEventListener('mouseenter', hold); s.addEventListener('mouseleave', release);
+    });
+    ol.addEventListener('focusin', function (e) { var k = steps.indexOf(e.target.closest('.step')); if (k > -1) { held = true; clearTimeout(t); ol.classList.add('is-paused'); show(k); } });
+    ol.addEventListener('focusout', function () { held = false; ol.classList.remove('is-paused'); clearTimeout(t); t = setTimeout(advance, DUR); });
+    show(0);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) {
+        var was = visible; visible = e[0].isIntersecting;
+        if (visible && !was) { clearTimeout(t); show(i < 0 ? 0 : i); t = setTimeout(advance, DUR); }
+        if (!visible) clearTimeout(t);
+      }, { threshold: 0.35 }).observe(ol);
+    } else { visible = true; t = setTimeout(advance, DUR); }
   })();
 
   // Preview-only inquiry form
