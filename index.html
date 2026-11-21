@@ -258,6 +258,10 @@
     /* stacked layout: the next heading sits right under the dial, so keep the soft top+bottom fade */
     .hero { overflow: hidden; }
     .dial .rings { mask: url(#ring-fade); }
+    /* tablets + phones: compass first, then the copy */
+    .hero { padding-top: 1.25rem; }
+    .dial-wrap { order: -1; padding-top: 1.5rem; }
+    .dial { width: min(40vw, 320px); }
   }
   /* phones: compass first, then the copy, tightened so Start a conversation stays above the fold */
   @media (max-width: 600px) {
