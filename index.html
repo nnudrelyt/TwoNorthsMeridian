@@ -261,14 +261,27 @@
     /* tablets + phones: compass first, then the copy */
     .hero { padding-top: 1.25rem; }
     .dial-wrap { order: -1; padding-top: 1.5rem; }
-    .dial { width: min(40vw, 320px); }
+    .hero h1 { text-shadow: 0 0 1.25rem var(--paper), 0 0 .4rem var(--paper); }   /* soft halo keeps the headline crisp over the dial */
+  }
+  /* tablets (B "Anchor"): compass 1.6x, running off the right edge; copy laid over its lower-left behind a soft contrast gradient */
+  @media (min-width: 601px) and (max-width: 900px) {
+    .dial-wrap { margin-bottom: -45vw; }                       /* copy starts ~386px below the dial's top on a 768 iPad */
+    .dial { width: 80vw; transform: translateX(24.9vw); }       /* face centre at ~75% across; right side crops off-screen */
+    .dial .lab-mag-g { text-anchor: end; transform: translateX(83.5px); }   /* Compass north right-aligned so it stays on screen and clear of the dotted arrow */
+    .hero-grid > :first-child::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      left: -4.5vw; width: 100vw; top: -170px; bottom: -3rem;
+      background: linear-gradient(90deg, rgba(21,12,38,.86) 0%, rgba(21,12,38,.82) 26%, rgba(21,12,38,.72) 44%, rgba(21,12,38,.57) 56%, rgba(21,12,38,.4) 65%, rgba(21,12,38,.24) 73%, rgba(21,12,38,.11) 80%, rgba(21,12,38,.04) 86%, rgba(21,12,38,0) 92%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,.08) 40px, rgba(0,0,0,.25) 80px, rgba(0,0,0,.5) 120px, rgba(0,0,0,.75) 160px, rgba(0,0,0,.92) 200px, #000 240px);
+              mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,.08) 40px, rgba(0,0,0,.25) 80px, rgba(0,0,0,.5) 120px, rgba(0,0,0,.75) 160px, rgba(0,0,0,.92) 200px, #000 240px);
+    }
   }
   /* phones: compass first, then the copy, tightened so Start a conversation stays above the fold */
   @media (max-width: 600px) {
     .hero { padding-block: .5rem 3rem; }
     .hero-grid { gap: .25rem; }
-    .dial-wrap { order: -1; padding-top: .9rem; margin-bottom: -.4rem; }   /* top room for the Map north label */
-    .dial { width: min(48vw, 190px); }
+    .dial-wrap { order: -1; padding-top: 1.7rem; margin-bottom: calc(-3.4vw + .82rem); }   /* Map north and the copy hold their places as the dial grows */
+    .dial { width: min(66vw, 280px); transform: translateX(5vw); }   /* nudged right (~19px on a 375 phone) */
     .hero h1 { font-size: 3.1rem; }
     .hero .tagline { margin-top: .75rem; font-size: 1.3rem; }
     .hero .question { margin-top: 1rem; font-size: 1.12rem; padding-left: 1rem; }
@@ -492,7 +505,7 @@
             <path class="needle-n2" d="M240 56 L249 240 L240 240Z"/>
           </g>
         </g>
-        <g class="reveal">
+        <g class="reveal lab-mag-g">
           <text class="lab-main lab-mag" x="291.5" y="4">Compass north</text>
           <text class="lab-sub" x="291.5" y="25">the heading</text>
         </g>
