@@ -20,9 +20,13 @@
     --ember: #E4571A;
     --ember-text: #B3420D;
     --ember-deep: #B3420D;
+    --ring-pulse: #B4A0DA;
+    --paper-top: #F7F5FB;
+    --nav-bg: #F7F5FB;
+    --dial-shadow: rgba(36, 19, 68, .2);
     --blue: #3C7DBF;
-    --btn-bg: #4E2A84;
-    --btn-ink: #FFFFFF;
+    --btn-bg: #E4571A;
+    --btn-ink: #1B0D36;
     --deep: #2A1450;
     --deeper: #1B0D36;
     --deep-ink: #F2EDFB;
@@ -44,8 +48,12 @@
       --ember: #FF7A3D;
       --ember-text: #FF9A6B;
       --ember-deep: #E4571A;
+      --ring-pulse: #6A55A3;
+      --paper-top: #0E0820;
+      --nav-bg: #0E0820;
+      --dial-shadow: rgba(0, 0, 0, .6);
       --blue: #6FA8E8;
-      --btn-bg: #B79CF0;
+      --btn-bg: #FF7A3D;
       --btn-ink: #1B0D36;
       --deep: #2A1450;
       --deeper: #0D0719;
@@ -64,8 +72,12 @@
     --ember: #FF7A3D;
     --ember-text: #FF9A6B;
     --ember-deep: #E4571A;
+    --ring-pulse: #6A55A3;
+    --paper-top: #0E0820;
+    --nav-bg: #0E0820;
+    --dial-shadow: rgba(0, 0, 0, .6);
     --blue: #6FA8E8;
-    --btn-bg: #B79CF0;
+    --btn-bg: #FF7A3D;
     --btn-ink: #1B0D36;
     --deep: #2A1450;
     --deeper: #0D0719;
@@ -85,11 +97,12 @@
     inset: 0 0 auto;
     height: env(safe-area-inset-top, 0px);
     z-index: 30;
-    background: var(--paper);
+    background: var(--nav-bg);
   }
+  html { background: var(--paper-top); }
   body {
     margin: 0;
-    background: var(--paper);
+    background: linear-gradient(to bottom, var(--paper-top) 0, var(--paper) 75vh) no-repeat, var(--paper);
     color: var(--ink);
     font-family: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
     font-size: 1.0625rem;
@@ -108,9 +121,13 @@
     position: sticky;
     top: env(safe-area-inset-top, 0px);
     z-index: 20;
-    background: var(--paper);
+    background: var(--nav-bg);
     border-bottom: 1px solid var(--rule);
+    transition: transform .35s cubic-bezier(.2,.7,.3,1);
   }
+  .site-header.is-hidden { transform: translateY(calc(-100% - env(safe-area-inset-top, 0px))); }
+  .site-header.is-hidden:focus-within { transform: none; }
+  @media (prefers-reduced-motion: reduce) { .site-header { transition: none; } }
   .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: .85rem; }
   .brand { display: flex; align-items: center; gap: .75rem; text-decoration: none; color: var(--purple-text); }
   .brand svg { width: 2.25rem; height: 2.25rem; flex: none; }
@@ -126,7 +143,7 @@
   }
 
   /* ---------- hero ---------- */
-  .hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3.5rem, 8vw, 7rem); }
+  .hero { position: relative; overflow: hidden; overflow: clip visible; padding-block: clamp(3rem, 8vw, 6.5rem) clamp(3.5rem, 8vw, 7rem); }
   .hero-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: clamp(2rem, 6vw, 5rem); align-items: center; }
   .hero h1 { font-size: clamp(3.6rem, 9vw, 7.6rem); line-height: .94; font-weight: 300; letter-spacing: -.025em; color: var(--ink); }
   .hero h1 .h1-sub { display: block; font-style: italic; font-weight: 400; font-size: .42em; line-height: 1.1; letter-spacing: 0; margin-top: .18em; color: var(--purple-text); }
@@ -137,10 +154,36 @@
   .hero .name-line + .name-line { margin-top: .35rem; }
   .btn { display: inline-block; margin-top: 2.25rem; padding: .85rem 1.6rem; background: var(--btn-bg); color: var(--btn-ink); text-decoration: none; font-weight: 600; font-size: .98rem; border-radius: 2px; border: 0; cursor: pointer; font-family: inherit; }
   .btn:hover { filter: brightness(1.12); }
+  /* Start a conversation: on hover / keyboard focus the arrow springs in (slight overshoot),
+     then gives one small bounce; pressing the button squashes it a touch */
+  .btn-go { display: inline-flex; align-items: center; transition: transform .45s cubic-bezier(.34,1.56,.64,1), filter .2s ease; }
+  .btn-go .btn-arrow { width: 0; height: 1em; margin-left: 0; opacity: 0; transform: translateX(-.6em) scale(.6); transition: width .4s cubic-bezier(.34,1.56,.64,1), margin-left .4s cubic-bezier(.34,1.56,.64,1), opacity .2s ease, transform .5s cubic-bezier(.34,1.56,.64,1); }
+  .btn-go:hover .btn-arrow, .btn-go:focus-visible .btn-arrow { width: 1em; margin-left: .55em; opacity: 1; transform: none; animation: arrow-bounce .7s cubic-bezier(.3,.7,.4,1) .4s; }
+  .btn-go:hover { transform: translateY(-2px); }
+  .btn-go:active { transform: translateY(0) scale(.96); transition-duration: .12s; }
+  @keyframes arrow-bounce {
+    0%   { transform: translateX(0); }
+    30%  { transform: translateX(.3em); }
+    55%  { transform: translateX(-.08em); }
+    75%  { transform: translateX(.1em); }
+    100% { transform: translateX(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-go, .btn-go .btn-arrow { transition: none; }
+    .btn-go:hover .btn-arrow, .btn-go:focus-visible .btn-arrow { animation: none; }
+    .btn-go:hover, .btn-go:active { transform: none; }
+  }
 
   .dial-wrap { position: relative; }
+  /* hero copy + button sit above the compass rings */
+  .hero-grid > :first-child { position: relative; z-index: 1; }
   .dial { display: block; width: min(100%, 36rem); height: auto; margin-inline: auto; overflow: visible; }
   .dial .rings circle { fill: none; stroke: var(--rule); stroke-width: 1; }
+  .dial .shadow-fx { flood-color: var(--dial-shadow); }
+  .dial .rings { mask: url(#ring-fade-top); }
+  .hero + .section { position: relative; }
+  /* wide screens: extra room under the hero so the outer ring's full bottom clears the next section's text */
+  @media (min-width: 901px) { .hero { padding-bottom: calc(clamp(3.5rem, 8vw, 7rem) + 4rem); } }
   .dial .face { fill: var(--face); stroke: var(--purple); stroke-width: 1.5; }
   .dial .inner { fill: none; stroke: var(--rule); stroke-width: 1; }
   .dial .bezel { fill: none; stroke: var(--rule); stroke-width: 1; }
@@ -151,6 +194,7 @@
   .dial .dir { font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: 20px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
   .dial .true-line { stroke: var(--purple); stroke-width: 1.75; }
   .dial .true-cap { fill: var(--purple); }
+  .dial .true-dots { stroke: var(--purple); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 0 4; }
   .dial .lab-main { font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: 21px; }
   .dial .lab-sub { font-family: "Hanken Grotesk", system-ui, sans-serif; font-size: 13px; fill: var(--muted); }
   .dial .lab-true { fill: var(--purple-text); text-anchor: middle; }
@@ -165,20 +209,24 @@
   .dial .gap-arc { fill: none; stroke: var(--ember); stroke-width: 1.5; }
   .dial .gap-deg { font-family: "Hanken Grotesk", system-ui, sans-serif; font-size: 12px; font-weight: 600; fill: var(--ember-text); text-anchor: middle; dominant-baseline: middle; }
 
+  /* load: dial fades up, then each ring fades in from the inside out and keeps a faint outward ripple */
+  .dial-body { animation: fade-up .9s cubic-bezier(.2,.7,.3,1) .1s both; }
+  .dial .rings circle {
+    transform-origin: 240px 240px;
+    animation:
+      ring-in 1.1s cubic-bezier(.2,.7,.3,1) calc(.45s + var(--i) * .22s) both,
+      ripple 7s ease-in-out calc(2.4s + var(--i) * .45s) infinite;
+  }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  @keyframes ring-in { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+  @keyframes ripple {
+    0%, 30%, 100% { stroke: var(--rule); transform: none; }
+    12% { stroke: var(--ring-pulse); transform: scale(1.012); }
+  }
   .needle { transform-origin: 240px 240px; transform: rotate(14deg); animation: swing 3.4s ease-in-out .5s both; }
   .reveal { animation: appear .9s ease 3.7s both; }
-  /* hover: a small settle wobble on the needle */
+  /* scroll: the needle sways gently with page scroll (spring in the script below) */
   .wobble { transform-origin: 240px 240px; }
-  .dial:hover .wobble { animation: settle 1.1s cubic-bezier(.3,.7,.4,1); }
-  @keyframes settle {
-    0%   { transform: rotate(0); }
-    18%  { transform: rotate(-3.5deg); }
-    36%  { transform: rotate(2.4deg); }
-    54%  { transform: rotate(-1.3deg); }
-    72%  { transform: rotate(.6deg); }
-    86%  { transform: rotate(-.2deg); }
-    100% { transform: rotate(0); }
-  }
   @keyframes swing {
     0%   { transform: rotate(-58deg); }
     16%  { transform: rotate(38deg); }
@@ -191,12 +239,16 @@
   }
   @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) {
-    .needle, .reveal, .dial:hover .wobble { animation: none; }
+    .needle, .reveal, .dial-body, .dial .rings circle { animation: none; }
     html { scroll-behavior: auto; }
   }
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: minmax(0, 1fr); }
     .dial { width: min(100%, 420px); }
+    /* stacked layout: the next heading sits right under the dial, so keep the soft top+bottom fade */
+    .hero { overflow: hidden; }
+    .dial .rings { mask: url(#ring-fade); }
+    .dial-wrap { margin-top: 2rem; }  /* room between the button and the Map north label */
   }
 
   /* ---------- sections ---------- */
@@ -301,12 +353,14 @@
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <!-- logo mark (C2): full ring + faceted needle at 14deg; ring/tail follow currentColor, needle follows the ember tokens -->
   <symbol id="mark" viewBox="0 0 32 32">
-    <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2"/>
-    <path d="M16 1.5v7" stroke="currentColor" stroke-width="2.5"/>
+    <circle cx="16" cy="16" r="12.6" fill="none" stroke="currentColor" stroke-width="2.7"/>
     <g transform="rotate(14 16 16)">
-      <path d="M16 5 L19.2 16 L12.8 16Z" fill="#E4571A"/>
-      <path d="M16 27 L19.2 16 L12.8 16Z" fill="currentColor" opacity=".4"/>
+      <path d="M16 26.2 L16 16 L12.6 16Z" fill="currentColor" fill-opacity=".6"/>
+      <path d="M16 26.2 L19.4 16 L16 16Z" fill="currentColor" fill-opacity=".38"/>
+      <path d="M16 5.8 L16 16 L12.6 16Z" style="fill: var(--ember, #E4571A)"/>
+      <path d="M16 5.8 L19.4 16 L16 16Z" style="fill: var(--ember-deep, #B3420D)"/>
     </g>
   </symbol>
 </svg>
@@ -335,21 +389,45 @@
     <div>
       <h1>Two Norths <span class="h1-sub">Meridian<span class="tm">™</span></span></h1>
       <p class="tagline"><span>Compass and map.</span> <span>Knowing which to use.</span></p>
-      <p class="question">When should leaders and institutions plan, and when should they steer?</p>
+      <p class="question">When should leaders and institutions plan,<br> and when should they steer?</p>
       <p class="name-line">Two norths: the one on the map, and the one on the compass.</p>
       <p class="name-line">When the landmark indicators disappear, the compass remains.</p>
-      <a class="btn" href="#contact">Start a conversation</a>
+      <a class="btn btn-go" href="#contact">Start a conversation<svg class="btn-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 8h11M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
 
     <div class="dial-wrap">
       <svg class="dial" viewBox="0 -56 480 536" role="img" aria-label="A compass with two norths: a fixed line for the north on the map, and a needle for the north the compass finds, which swings and settles 14 degrees away from it.">
+        <defs>
+          <!-- rings fade out before the hero's top and bottom edges instead of being cut off -->
+          <linearGradient id="ring-fade-grad" gradientUnits="userSpaceOnUse" x1="0" y1="-150" x2="0" y2="540">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+            <stop offset=".17" stop-color="#fff" stop-opacity="1"/>
+            <stop offset=".76" stop-color="#fff" stop-opacity="1"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="ring-fade" maskUnits="userSpaceOnUse" x="-300" y="-300" width="1080" height="1080">
+            <rect x="-300" y="-300" width="1080" height="1080" fill="url(#ring-fade-grad)"/>
+          </mask>
+          <!-- wide screens: fade only at the top (under the header); ring bottoms show in full -->
+          <linearGradient id="ring-fade-top-grad" gradientUnits="userSpaceOnUse" x1="0" y1="-150" x2="0" y2="-33">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+          </linearGradient>
+          <mask id="ring-fade-top" maskUnits="userSpaceOnUse" x="-300" y="-300" width="1080" height="1080">
+            <rect x="-300" y="-300" width="1080" height="1080" fill="url(#ring-fade-top-grad)"/>
+          </mask>
+          <filter id="dial-shadow" x="-40%" y="-40%" width="180%" height="190%">
+            <feDropShadow class="shadow-fx" dx="0" dy="16" stdDeviation="22"/>
+          </filter>
+        </defs>
         <g class="rings">
-          <circle cx="240" cy="240" r="276"/>
-          <circle cx="240" cy="240" r="356"/>
-          <circle cx="240" cy="240" r="456"/>
+          <circle cx="240" cy="240" r="276" style="--i:0"/>
+          <circle cx="240" cy="240" r="356" style="--i:1"/>
+          <circle cx="240" cy="240" r="456" style="--i:2"/>
         </g>
+        <g class="dial-body">
         <circle class="bezel" cx="240" cy="240" r="212"/>
-        <circle class="face" cx="240" cy="240" r="200"/>
+        <circle class="face" cx="240" cy="240" r="200" filter="url(#dial-shadow)"/>
         <g id="ticks"></g>
         <g aria-hidden="true">
           <text class="num" x="322" y="98">30</text>
@@ -367,11 +445,12 @@
         <circle class="inner" cx="240" cy="240" r="146"/>
 
         <!-- true north: fixed -->
-        <line class="true-line" x1="240" y1="240" x2="240" y2="-2"/>
+        <line class="true-line" x1="240" y1="240" x2="240" y2="24"/>
+        <line class="true-dots" x1="240" y1="-8" x2="240" y2="21"/>
         <path class="true-cap" d="M240 34 L246 22 L234 22Z"/>
-        <path class="true-cap" d="M240 -10 L246 2 L240 6 L234 2Z"/>
-        <text class="lab-main lab-true" x="240" y="-36">Map north</text>
-        <text class="lab-sub lab-true" x="240" y="-20" style="text-anchor:middle">the plan</text>
+        <path class="true-cap" d="M240 -27 L246 -15 L240 -11 L234 -15Z"/>
+        <text class="lab-main lab-true" x="240" y="-65">Map north</text>
+        <text class="lab-sub lab-true" x="240" y="-44" style="text-anchor:middle">the plan</text>
 
         <!-- declination -->
         <g class="reveal">
@@ -389,13 +468,14 @@
           </g>
         </g>
         <g class="reveal">
-          <text class="lab-main lab-mag" x="306" y="18">Compass north</text>
-          <text class="lab-sub" x="306" y="35">the heading</text>
+          <text class="lab-main lab-mag" x="291.5" y="4">Compass north</text>
+          <text class="lab-sub" x="291.5" y="25">the heading</text>
         </g>
 
         <circle class="hub" cx="240" cy="240" r="12"/>
         <circle class="hub-pin" cx="240" cy="240" r="5"/>
         <circle class="hub-dot" cx="240" cy="240" r="1.8"/>
+        </g>
       </svg>
     </div>
   </div>
@@ -621,6 +701,58 @@
       l.setAttribute('class', 'tick' + (major ? ' major' : (mid ? '' : ' fine')));
       g.appendChild(l);
     }
+  })();
+
+  // Needle sways lightly with scroll: scrolling sets a small lean that fades away,
+  // and a soft spring follows it, so the needle drifts and eases back to rest (roughly 2.5-5 deg, with a couple of soft bounces)
+  (function () {
+    var w = document.querySelector('.dial .wobble');
+    if (!w || !window.requestAnimationFrame) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var angle = 0, vel = 0, lean = 0, lastY = window.scrollY, lastT = 0, raf = 0, visible = true;
+    var PER_PX = 0.025, MAX_LEAN = 3.5, FADE = 0.93, STIFF = 0.035, DAMP = 0.06;
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(document.querySelector('.dial'));
+    }
+    function step(t) {
+      var dt = lastT ? Math.min((t - lastT) / 16.67, 3) : 1;
+      lastT = t;
+      lean *= Math.pow(FADE, dt);
+      vel += (STIFF * (lean - angle) - DAMP * vel) * dt;
+      angle += vel * dt;
+      if (Math.abs(angle) < 0.01 && Math.abs(vel) < 0.005 && Math.abs(lean) < 0.01) {
+        angle = vel = lean = 0; lastT = 0; raf = 0;
+        w.style.transform = '';
+        return;
+      }
+      w.style.transform = 'rotate(' + angle.toFixed(3) + 'deg)';
+      raf = requestAnimationFrame(step);
+    }
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY, dy = y - lastY;
+      lastY = y;
+      if (!visible) return;
+      lean = Math.max(-MAX_LEAN, Math.min(MAX_LEAN, lean + dy * PER_PX));
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
+  })();
+
+  // Nav: slide out when scrolling down the page, slide back in when scrolling up
+  (function () {
+    var h = document.querySelector('.site-header');
+    if (!h) return;
+    var lastY = window.scrollY, ticking = false;
+    function update() {
+      var y = window.scrollY, dy = y - lastY;
+      ticking = false;
+      if (Math.abs(dy) < 6) return;          // ignore tiny jitter
+      if (dy > 0 && y > h.offsetHeight) h.classList.add('is-hidden');
+      else if (dy < 0) h.classList.remove('is-hidden');
+      lastY = y;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
   })();
 
   // Preview-only inquiry form
