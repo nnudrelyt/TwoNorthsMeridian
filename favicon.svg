@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .ring { stroke: #4E2A84; } .tail { fill: #4E2A84; } .n1 { fill: #E4571A; } .n2 { fill: #B3420D; }
+    @media (prefers-color-scheme: dark) {
+      .ring { stroke: #B79CF0; } .tail { fill: #B79CF0; } .n1 { fill: #FF7A3D; } .n2 { fill: #E4571A; }
+    }
+  </style>
+  <circle class="ring" cx="16" cy="16" r="12.6" fill="none" stroke-width="2.7"/>
+  <g transform="rotate(14 16 16)">
+    <path class="tail" d="M16 26.2 L16 16 L12.6 16Z" fill-opacity=".6"/>
+    <path class="tail" d="M16 26.2 L19.4 16 L16 16Z" fill-opacity=".38"/>
+    <path class="n1" d="M16 5.8 L16 16 L12.6 16Z"/>
+    <path class="n2" d="M16 5.8 L19.4 16 L16 16Z"/>
+  </g>
+</svg>
