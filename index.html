@@ -19,6 +19,7 @@
     --purple-text: #4E2A84;
     --ember: #E4571A;
     --ember-text: #B3420D;
+    --ember-deep: #B3420D;
     --blue: #3C7DBF;
     --btn-bg: #4E2A84;
     --btn-ink: #FFFFFF;
@@ -42,6 +43,7 @@
       --purple-text: #C7B2F6;
       --ember: #FF7A3D;
       --ember-text: #FF9A6B;
+      --ember-deep: #E4571A;
       --blue: #6FA8E8;
       --btn-bg: #B79CF0;
       --btn-ink: #1B0D36;
@@ -61,6 +63,7 @@
     --purple-text: #C7B2F6;
     --ember: #FF7A3D;
     --ember-text: #FF9A6B;
+    --ember-deep: #E4571A;
     --blue: #6FA8E8;
     --btn-bg: #B79CF0;
     --btn-ink: #1B0D36;
@@ -140,23 +143,42 @@
   .dial .rings circle { fill: none; stroke: var(--rule); stroke-width: 1; }
   .dial .face { fill: var(--face); stroke: var(--purple); stroke-width: 1.5; }
   .dial .inner { fill: none; stroke: var(--rule); stroke-width: 1; }
+  .dial .bezel { fill: none; stroke: var(--rule); stroke-width: 1; }
   .dial .tick { stroke: var(--muted); stroke-width: 1; }
+  .dial .tick.fine { stroke-width: .75; opacity: .7; }
   .dial .tick.major { stroke: var(--purple); stroke-width: 1.5; }
-  .dial .dir { font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: 20px; fill: var(--muted); text-anchor: middle; dominant-baseline: middle; }
-  .dial .true-line { stroke: var(--purple); stroke-width: 2.5; }
+  .dial .num { font-family: "Hanken Grotesk", system-ui, sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .04em; fill: var(--muted); text-anchor: middle; dominant-baseline: middle; }
+  .dial .dir { font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: 20px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+  .dial .true-line { stroke: var(--purple); stroke-width: 1.75; }
   .dial .true-cap { fill: var(--purple); }
   .dial .lab-main { font-family: "Newsreader", Georgia, serif; font-style: italic; font-size: 21px; }
   .dial .lab-sub { font-family: "Hanken Grotesk", system-ui, sans-serif; font-size: 13px; fill: var(--muted); }
   .dial .lab-true { fill: var(--purple-text); text-anchor: middle; }
   .dial .lab-mag { fill: var(--ember-text); }
   .dial .needle-n { fill: var(--ember); }
-  .dial .needle-s { fill: var(--purple); opacity: .4; }
+  .dial .needle-n2 { fill: var(--ember-deep); }
+  .dial .needle-s { fill: var(--face); stroke: var(--purple); stroke-width: 1.25; stroke-linejoin: round; }
   .dial .hub { fill: var(--face); stroke: var(--purple); stroke-width: 1.5; }
-  .dial .hub-dot { fill: var(--ember); }
-  .dial .gap-arc { fill: none; stroke: var(--ember); stroke-width: 2; stroke-dasharray: 3 4; }
+  .dial .hub-pin { fill: var(--purple); }
+  .dial .hub-dot { fill: var(--face); }
+  .dial .gap-wedge { fill: var(--ember); opacity: .14; }
+  .dial .gap-arc { fill: none; stroke: var(--ember); stroke-width: 1.5; }
+  .dial .gap-deg { font-family: "Hanken Grotesk", system-ui, sans-serif; font-size: 12px; font-weight: 600; fill: var(--ember-text); text-anchor: middle; dominant-baseline: middle; }
 
   .needle { transform-origin: 240px 240px; transform: rotate(14deg); animation: swing 3.4s ease-in-out .5s both; }
   .reveal { animation: appear .9s ease 3.7s both; }
+  /* hover: a small settle wobble on the needle */
+  .wobble { transform-origin: 240px 240px; }
+  .dial:hover .wobble { animation: settle 1.1s cubic-bezier(.3,.7,.4,1); }
+  @keyframes settle {
+    0%   { transform: rotate(0); }
+    18%  { transform: rotate(-3.5deg); }
+    36%  { transform: rotate(2.4deg); }
+    54%  { transform: rotate(-1.3deg); }
+    72%  { transform: rotate(.6deg); }
+    86%  { transform: rotate(-.2deg); }
+    100% { transform: rotate(0); }
+  }
   @keyframes swing {
     0%   { transform: rotate(-58deg); }
     16%  { transform: rotate(38deg); }
@@ -169,7 +191,7 @@
   }
   @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
   @media (prefers-reduced-motion: reduce) {
-    .needle, .reveal { animation: none; }
+    .needle, .reveal, .dial:hover .wobble { animation: none; }
     html { scroll-behavior: auto; }
   }
   @media (max-width: 900px) {
@@ -320,43 +342,60 @@
     </div>
 
     <div class="dial-wrap">
-      <svg class="dial" viewBox="0 -56 480 536" role="img" aria-label="A compass with two norths: a fixed line for the north on the map, and a needle for the north the compass finds, which swings and settles a few degrees away from it.">
+      <svg class="dial" viewBox="0 -56 480 536" role="img" aria-label="A compass with two norths: a fixed line for the north on the map, and a needle for the north the compass finds, which swings and settles 14 degrees away from it.">
         <g class="rings">
-          <circle cx="240" cy="240" r="236"/>
           <circle cx="240" cy="240" r="276"/>
-          <circle cx="240" cy="240" r="326"/>
-          <circle cx="240" cy="240" r="386"/>
+          <circle cx="240" cy="240" r="356"/>
           <circle cx="240" cy="240" r="456"/>
         </g>
+        <circle class="bezel" cx="240" cy="240" r="212"/>
         <circle class="face" cx="240" cy="240" r="200"/>
-        <circle class="inner" cx="240" cy="240" r="150"/>
-        <circle class="inner" cx="240" cy="240" r="90"/>
         <g id="ticks"></g>
+        <g aria-hidden="true">
+          <text class="num" x="322" y="98">30</text>
+          <text class="num" x="382" y="158">60</text>
+          <text class="num" x="382" y="322">120</text>
+          <text class="num" x="322" y="382">150</text>
+          <text class="num" x="158" y="382">210</text>
+          <text class="num" x="98" y="322">240</text>
+          <text class="num" x="98" y="158">300</text>
+          <text class="num" x="158" y="98">330</text>
+        </g>
         <text class="dir" x="404" y="241">E</text>
-        <text class="dir" x="240" y="404">S</text>
+        <text class="dir" x="240" y="405">S</text>
         <text class="dir" x="76" y="241">W</text>
+        <circle class="inner" cx="240" cy="240" r="146"/>
 
         <!-- true north: fixed -->
         <line class="true-line" x1="240" y1="240" x2="240" y2="-2"/>
+        <path class="true-cap" d="M240 34 L246 22 L234 22Z"/>
         <path class="true-cap" d="M240 -10 L246 2 L240 6 L234 2Z"/>
         <text class="lab-main lab-true" x="240" y="-36">Map north</text>
         <text class="lab-sub lab-true" x="240" y="-20" style="text-anchor:middle">the plan</text>
 
         <!-- declination -->
-        <path class="gap-arc reveal" d="M240 90 A150 150 0 0 1 276.3 94.5"/>
+        <g class="reveal">
+          <path class="gap-wedge" d="M240 240 L240 94 A146 146 0 0 1 275.32 98.34Z"/>
+          <path class="gap-arc" d="M240 94 A146 146 0 0 1 275.32 98.34"/>
+          <text class="gap-deg" x="255.4" y="114.9">14°</text>
+        </g>
 
         <!-- magnetic needle -->
         <g class="needle">
-          <path class="needle-s" d="M240 420 L252 240 L228 240Z"/>
-          <path class="needle-n" d="M240 52 L252 240 L228 240Z"/>
+          <g class="wobble">
+            <path class="needle-s" d="M240 424 L249 240 L231 240Z"/>
+            <path class="needle-n" d="M240 56 L240 240 L231 240Z"/>
+            <path class="needle-n2" d="M240 56 L249 240 L240 240Z"/>
+          </g>
         </g>
         <g class="reveal">
           <text class="lab-main lab-mag" x="306" y="18">Compass north</text>
           <text class="lab-sub" x="306" y="35">the heading</text>
         </g>
 
-        <circle class="hub" cx="240" cy="240" r="10"/>
-        <circle class="hub-dot" cx="240" cy="240" r="3.5"/>
+        <circle class="hub" cx="240" cy="240" r="12"/>
+        <circle class="hub-pin" cx="240" cy="240" r="5"/>
+        <circle class="hub-dot" cx="240" cy="240" r="1.8"/>
       </svg>
     </div>
   </div>
@@ -571,13 +610,15 @@
   (function () {
     var g = document.getElementById('ticks');
     var ns = 'http://www.w3.org/2000/svg';
-    for (var i = 0; i < 72; i++) {
-      var len = i % 18 === 0 ? 24 : (i % 2 === 0 ? 13 : 7);
+    // 2° fine, 10° mid, 30° major (none at 0°: map north sits there)
+    for (var a = 2; a < 360; a += 2) {
+      var major = a % 30 === 0, mid = a % 10 === 0;
+      var len = major ? 18 : (mid ? 11 : 6);
       var l = document.createElementNS(ns, 'line');
       l.setAttribute('x1', 240); l.setAttribute('x2', 240);
-      l.setAttribute('y1', 54); l.setAttribute('y2', 54 + len);
-      l.setAttribute('transform', 'rotate(' + (i * 5) + ' 240 240)');
-      l.setAttribute('class', 'tick' + (i % 18 === 0 ? ' major' : ''));
+      l.setAttribute('y1', 42); l.setAttribute('y2', 42 + len);
+      l.setAttribute('transform', 'rotate(' + a + ' 240 240)');
+      l.setAttribute('class', 'tick' + (major ? ' major' : (mid ? '' : ' fine')));
       g.appendChild(l);
     }
   })();
