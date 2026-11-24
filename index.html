@@ -394,6 +394,12 @@
     .team-lead, .team-advisors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(3rem, 4vw, 6rem); align-items: start; }
     .team .person:nth-child(2) { border-top: 0; padding-top: 0; }
   }
+  /* phones: bios show the first paragraph, "See more" reveals the rest (button is added by script, so no-JS shows everything) */
+  .bio-more { display: none; }
+  @media (max-width: 600px) {
+    .person.is-collapsed .bio ~ .bio { display: none; }
+    .person.is-collapsed .bio-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: .35rem; padding: 0; background: none; border: 0; font: inherit; font-size: .95rem; font-weight: 600; color: var(--purple-text); text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 4px; cursor: pointer; }
+  }
 
   /* why us */
   .why { background: var(--paper-2); }
@@ -919,6 +925,29 @@
         if (!visible) clearTimeout(t);
       }, { threshold: 0.35 }).observe(ol);
     } else { visible = true; t = setTimeout(advance, DUR); }
+  })();
+
+  // Team bios on phones: first paragraph, then "See more"
+  (function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.team .person'), function (person) {
+      var bios = person.querySelectorAll('.bio');
+      if (bios.length < 2) return;
+      var name = person.querySelector('h3').textContent;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bio-more';
+      btn.textContent = 'See more';
+      btn.setAttribute('aria-label', 'See more about ' + name);
+      btn.setAttribute('aria-expanded', 'false');
+      bios[0].insertAdjacentElement('afterend', btn);
+      person.classList.add('is-collapsed');
+      btn.addEventListener('click', function () {
+        person.classList.remove('is-collapsed');
+        btn.setAttribute('aria-expanded', 'true');
+        bios[1].setAttribute('tabindex', '-1');
+        bios[1].focus({ preventScroll: true });
+      });
+    });
   })();
 
   // Preview-only inquiry form
